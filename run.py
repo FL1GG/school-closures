@@ -4,11 +4,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import sys
-from subprocess import CREATE_NO_WINDOW
 
+options = webdriver.ChromeOptions()
+options.add_argument("--log-level=0")
 
-
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options)
 
 #got a facebook api account but it lacks ability to scan public posts, so no scraping :(
 
