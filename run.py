@@ -12,8 +12,9 @@ driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),optio
 
 #got a facebook api account but it lacks ability to scan public posts, so no scraping :(
 
-#TODO make this cmdline
-dates = ['1/21', '1/22']
+
+
+dates = []
 statuses = ['Open', 'Closed', 'Early Release', 'Late Start', 'Virtual', 'To Be Determined', 'Unknown']
 
 
@@ -21,13 +22,6 @@ output_file = open('output.csv', 'w',newline='')
 output_file_writer = csv.writer(output_file, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
 
 fields = ['Location', 'School(s)']
-
-for date in dates:
-    fields.append(date)
-
-# output file
-output_file_writer.writerow(fields)
-
 
 """
 processes a url into a csv output
@@ -50,16 +44,22 @@ def process_url(row):
 
     output_file_writer.writerow(row_out)
 
+if __name__ == "__main__":
+    for arg in sys.argv[1:]:
+        dates.append(arg)
+        fields.append(arg)
 
-school_data = []
-with open('schools.csv', 'r') as csvfile:
-    school_data = csv.DictReader(csvfile, delimiter=',')
+    output_file_writer.writerow(fields) # write header
 
-    for row in school_data:
-        if(row['Type'] == 'NA' or row['Type'] == None):
-            continue
+    school_data = []
+    with open('schools.csv', 'r') as csvfile:
+        school_data = csv.DictReader(csvfile, delimiter=',')
 
-        process_url(row)
+        for row in school_data:
+            if(row['Type'] == 'NA' or row['Type'] == None):
+                continue
+
+            process_url(row)
 
 
-output_file.close()
+    output_file.close()

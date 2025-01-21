@@ -1,1 +1,2 @@
 # School scraper
+This program is intended to increase the speed at which a user can catalog the county system school closures in the state of georgia. It does this by preloading the location for school announcement and automatically fetching it in a browser tab so it can be quickly processed by a person.
