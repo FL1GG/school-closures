@@ -6,7 +6,7 @@ Installation requires python3 and git
 
 First install python if you have not done so already. On windows systems, you can type python3 into a command prompt to be brought to the app store to install it:
 ```pwsh
-python
+python3
 ```
 
 alternatively on linux simply use apt
