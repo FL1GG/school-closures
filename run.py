@@ -14,7 +14,7 @@ driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 
 #TODO make this cmdline
 dates = ['1/21', '1/22']
-statuses = ['Open', 'Closed', 'Early Release', 'Late Start', 'To Be Determined', 'Unknown']
+statuses = ['Open', 'Closed', 'Early Release', 'Late Start', 'Virtual', 'To Be Determined', 'Unknown']
 
 
 output_file = open('output.csv', 'w',newline='')
@@ -43,7 +43,7 @@ def process_url(row):
             print(str(i) + ": " + statuses[i])
 
         response = ""
-        while(not response.isdigit() or int(response) >= len(statuses)-1):
+        while(not response.isdigit() or int(response) >= len(statuses)):
             response = input("#> ")
         
         row_out.append(statuses[int(response)])
