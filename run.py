@@ -3,63 +3,77 @@ import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-import sys
+import sys, os
+from pathlib import Path
 
+process_output = 0
+
+# sanity checks
+if Path("./output.csv").is_file():
+    inp = input("File output.csv already exists, continuing will override this file. Are you sure you want to continue? (Y/N): ")
+
+    if(inp.lower() != 'y' and inp.lower() != 'yes'):
+        sys.exit(1)
+
+    inp = input("Since output.csv already exists, would you like to only process rows that are Unknown or TBD? (Y/N): ")
+
+    if(inp.lower() != 'y' and inp.lower() != 'yes'):
+        process_output = 1
+
+
+# create chrome hooks
 options = webdriver.ChromeOptions()
 options.add_argument("--log-level=0")
-
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options)
 
-#got a facebook api account but it lacks ability to scan public posts, so no scraping :(
-
-
-
+# data formatting inits
 dates = []
 statuses = ['Open', 'Closed', 'Early Release', 'Late Start', 'Virtual', 'To Be Determined', 'Unknown']
-
-
-output_file = open('output.csv', 'w',newline='')
-output_file_writer = csv.writer(output_file, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
-
 fields = ['Location', 'School(s)']
 
-"""
-processes a url into a csv output
-"""
-def process_url(row):
-    row_out = [row['Location'], row['School']]
 
-    driver.get(row['Primary'])
-    for date in dates:
-        print("")
-        print(row['School'] + " Status on " + date)
-        for i in range(len(statuses)):
-            print(str(i) + ": " + statuses[i])
+# open 
+output_file = open('output_tmp.csv', 'w',newline='')
+output_file_writer = csv.writer(output_file, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
 
-        response = ""
-        while(not response.isdigit() or int(response) >= len(statuses)):
-            response = input("#> ")
-        
-        row_out.append(statuses[int(response)])
+for arg in sys.argv[1:]:
+    dates.append(arg)
+    fields.append(arg)
 
-    output_file_writer.writerow(row_out)
+output_file_writer.writerow(fields) # write header
 
-if __name__ == "__main__":
-    for arg in sys.argv[1:]:
-        dates.append(arg)
-        fields.append(arg)
+school_data = []
 
-    output_file_writer.writerow(fields) # write header
+file_name = 'schools.csv'
 
-    school_data = []
-    with open('schools.csv', 'r') as csvfile:
-        school_data = csv.DictReader(csvfile, delimiter=',')
+if(process_output):
+    file_name = 'output.csv'
 
-        for row in school_data:
-            if(row['Type'] == 'NA' or row['Type'] == None):
-                continue
+with open(filename, 'r') as csvfile:
+    school_data = csv.DictReader(csvfile, delimiter=',')
 
-            process_url(row)
+    for row in school_data:
+        row_out = [row['Location'], row['School(s)']]
 
+        driver.get(row['Primary'])
+        for date in dates:
+            print("")
+            print(row['School(s)'] + " Status on " + date)
+            for i in range(len(statuses)):
+                print(str(i) + ": " + statuses[i])
 
-    output_file.close()
+            response = ""
+            while(not response.isdigit() or int(response) >= len(statuses)):
+                response = input("#> ")
+            
+            row_out.append(statuses[int(response)])
+
+        output_file_writer.writerow(row_out)
+
+output_file.close()
+
+if(Path("./output.csv").is_file())
+    os.remove('output.csv')
+
+os.rename('output_tmp.csv', 'output.csv')
+
